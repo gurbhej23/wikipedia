@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'stylemain/style.css' %}">
+    <title>wikipedia</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Wikipedia</h1>
+        <form id="search-form" method="post">
+            {% csrf_token %}
+            <input type="text" name="search" id="search-input">
+            <button type="submit" id="search-button">Search</button>
+        </form>
+        <div id="message">
+            {% if error %}
+            {{ error }}
+            {% endif %}
+        </div>
+        <div id="result">
+            {% if result %}
+            {{ result }}
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+
+</html>
