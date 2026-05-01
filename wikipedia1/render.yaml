@@ -3,7 +3,7 @@ services:
     name: wikipedia-django
     env: python
     rootDir: wikipedia/wikipedia1
-    buildCommand: ./build.sh
+    buildCommand: bash build.sh
     startCommand: gunicorn wikipedia1.wsgi:application
     envVars:
       - key: PYTHON_VERSION
