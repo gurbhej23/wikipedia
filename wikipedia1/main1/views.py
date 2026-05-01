@@ -1,6 +1,13 @@
 from django.http import JsonResponse
 from django.shortcuts import render
-import wikipedia
+import wikipediaapi
+
+# Initialize Wikipedia API
+wiki = wikipediaapi.Wikipedia(
+    user_agent="wikipedia-django-app/1.0",
+    language="en",
+    extract_format=wikipediaapi.ExtractFormat.WIKI,
+)
 
 
 def home(request):
@@ -9,27 +16,27 @@ def home(request):
         search = request.POST.get("search", "").strip()
 
         if not search:
-            if request.headers.get("x-requested-with") == "XMLHttpRequest":
-                return JsonResponse(
-                    {"success": False, "error": "Please enter something to search."}
-                )
-            return render(
-                request,
-                "main/index.html",
-                {"error": "Please enter something to search."},
-            )
-
-        try:
-            result = wikipedia.summary(search, sentences=10)
-        except Exception:
-            message = "Could not find a matching Wikipedia summary."
+            message = "Please enter something to search."
             if request.headers.get("x-requested-with") == "XMLHttpRequest":
                 return JsonResponse({"success": False, "error": message})
             return render(request, "main/index.html", {"error": message})
 
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
-            return JsonResponse({"success": True, "result": result})
+        page = wiki.page(search)
 
-        return render(request, "main/index.html", {"result": result})
+        if page.exists():
+            result = page.summary[:800]  # limit text length
+
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": True, "result": result})
+
+            return render(request, "main/index.html", {"result": result})
+
+        else:
+            message = "No result found."
+
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": False, "error": message})
+
+            return render(request, "main/index.html", {"error": message})
 
     return render(request, "main/index.html")
