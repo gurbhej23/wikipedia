@@ -2,7 +2,7 @@ services:
   - type: web
     name: wikipedia-django
     env: python
-    rootDir: wikipedia/wikipedia1
+    rootDir: wikipedia1
     buildCommand: bash build.sh
     startCommand: gunicorn wikipedia1.wsgi:application
     envVars:
